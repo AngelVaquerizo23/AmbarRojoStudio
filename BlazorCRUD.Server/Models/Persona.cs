@@ -13,13 +13,13 @@ public partial class Persona
 
     public string Direccion { get; set; } = null!;
 
-    public int Telefono { get; set; }
+    public string Telefono { get; set; } = null!;
 
-    public int WhatsApp { get; set; }
+    public string WhatsApp { get; set; } = null!;
 
     public string Correo { get; set; } = null!;
 
     public string IdRoles { get; set; } = null!;
-
+    public DateTime FechaRegistro {get; set;}
     public virtual Role IdRolesNavigation { get; set; } = null!;
 }

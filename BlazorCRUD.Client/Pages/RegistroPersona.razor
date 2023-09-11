@@ -1,0 +1,119 @@
+﻿@page "/Registro"
+@page "/Registro/{IdEditar:int}"
+
+@using BlazorCRUD.Shared;
+@using BlazorCRUD.Client.Services;
+
+@inject IntPersonaServices personaService;
+@inject IntRolesServices rolServices;
+@inject NavigationManager navegacion;
+
+<h3>Registro Nuevo Usuario</h3>
+
+<EditForm Model="persona" OnValidSubmit="OnValidSumit">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <InputText class="form-control" @bind-Value="persona.Nombre"></InputText>
+            <ValidationMessage For="@(() => persona.Nombre)"></ValidationMessage>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Apellido</label>
+            <InputText class="form-control" @bind-Value="persona.Apellido"></InputText>
+            <ValidationMessage For="@(() => persona.Apellido)"></ValidationMessage>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Direccion</label>
+            <InputText class="form-control" @bind-Value="persona.Direccion"></InputText>
+            <ValidationMessage For="@(() => persona.Direccion)"></ValidationMessage>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Telefono</label>
+            <InputNumber class="form-control" @bind-Value="persona.Telefono"></InputNumber>
+            <ValidationMessage For="@(() => persona.Telefono)"></ValidationMessage>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">WhatsApp</label>
+            <InputNumber class="form-control" @bind-Value="persona.WhatsApp"></InputNumber>
+            <ValidationMessage For="@(() => persona.WhatsApp)"></ValidationMessage>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Correo</label>
+            <InputText class="form-control" @bind-Value="persona.Correo"></InputText>
+            <ValidationMessage For="@(() => persona.Correo)"></ValidationMessage>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Fecha de Registro</label>
+            <InputDate class="form-control" @bind-Value="persona.FechaRegistro"></InputDate>
+            <ValidationMessage For="@(() => persona.FechaRegistro)"></ValidationMessage>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Rol</label>
+            <InputSelect class="form-select" @bind-Value="persona.IdRoles">
+                <option value="0">---Seleccione su Rol---</option>
+                    @foreach(var item in listaRoles)
+                    {
+                        <option value="@item.IdRoles">@item.Rol</option>
+                    }
+            </InputSelect>
+            <ValidationMessage For="@(() => persona.IdRoles)"></ValidationMessage>
+        </div>
+    
+    <button class="btn-primary" type="submit">
+        @btnTexto
+    </button>
+
+    <a class="btn btn-warning" href="RegistroPersona">Volver</a>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int IdEditar { get; set; } = 0;
+
+    string Titulo = string.Empty;
+    string btnTexto = string.Empty;
+
+    PersonaShared persona = new PersonaShared();
+    List<RolesShared> listaRoles = new List<RolesShared>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if(IdEditar != 0)
+        {
+            persona = await personaService.Buscar(IdEditar);
+            btnTexto = "Actualizar Registro";
+            Titulo = "Editar Registro";
+        }
+        else
+        {
+            persona.FechaRegistro = DateTime.Today;
+            btnTexto = "Guardar Registro";
+            Titulo = "Nuevo Registro";
+        }
+        listaRoles = await rolServices.Lista();
+    }
+    private async Task OnValidSumit()
+    {
+        int idDevuelto = 0;
+        if(IdEditar == 0)
+        {
+            idDevuelto = await personaService.Guardar(persona);
+        }
+        else
+        {
+            idDevuelto = await personaService.Editar(persona);
+        }
+
+        if(idDevuelto != 0)
+        {
+            navegacion.NavigateTo("/RegistroPersona");
+        }
+    }
+}

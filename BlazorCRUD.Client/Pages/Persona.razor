@@ -1,0 +1,91 @@
+﻿@page "/RegistroPersona"
+
+@using BlazorCRUD.Shared;
+@using CurrieTechnologies.Razor.SweetAlert2;
+@using BlazorCRUD.Client.Services;
+
+@inject SweetAlertService Swal;
+@inject IntPersonaServices personaService; 
+
+<h3>Regitrados</h3>
+
+<a class="btn btn-success btn-sm mb-3" href="Registro">Nuevo Usuario</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Direccion</th>
+            <th>Telefono</th>
+            <th>WhatsApp</th>
+            <th>Correo</th>
+            <th>Fecha del Registro</th>
+            <th>Rol</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if(listaPersona == null)
+        {
+            <tr>
+                <td colspan="7" align="center">
+                    <img style="width:50px" src="https://media.tenor.com/On7kvXhzml4AAAAj/loading-gif.gif" />
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach(var item in listaPersona)
+            {
+                <tr>
+                    <td>@item.Nombre</td>
+                    <td>@item.Apellido</td>
+                    <td>@item.Direccion</td>
+                    <td>@item.Telefono</td>
+                    <td>@item.WhatsApp</td>
+                    <td>@item.Correo</td>
+                    <td>@item.FechaRegistro.ToString("dd/MM/yyyy")</td>
+                    <td>@item.IdRoles</td>
+                    <td>
+                        @*Es para eitar al usuario*@
+                        <a class="btn btn-primary btn-sm" href="Registro/@item.Id">
+                            <i class="oi oi-pencil"></i>
+                        </a>
+                        <button type="button" class="btn btn-danger btn-sm ms-2"@onclick="(() => Eliminar(item.Id))">
+                            <i class="oi oi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+
+</table>
+
+@code {
+    List<PersonaShared>? listaPersona = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaPersona = await personaService.Lista();
+    }
+
+    private async Task Eliminar(int id)
+    {
+        var resultado = await Swal.FireAsync(new SweetAlertOptions
+        {
+            Title =  "Eliminar Usuario",
+            Text = "¿Desea Eliminar al Usuario?",
+            Icon = SweetAlertIcon.Question,
+            ShowCancelButton = true
+        });
+
+        if(resultado.IsConfirmed)
+        {
+            var eliminado = await personaService.Eliminar(id);
+
+            if (eliminado)
+                listaPersona = listaPersona!.FindAll(e => e.Id != id);
+        }
+    }
+}

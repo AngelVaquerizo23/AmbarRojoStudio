@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BlazorCRUD.Shared
 {
-    public class Persona
+    public class PersonaShared
     {
         public int Id { get; set; }
 
@@ -21,16 +21,20 @@ namespace BlazorCRUD.Shared
         public string Direccion { get; set; } = null!;
 
         [Required(ErrorMessage = "Debe poner un telefono")]
-        public int Telefono { get; set; }
+        public string Telefono { get; set; } = null!;
 
         [Required(ErrorMessage = "Favor de agregar un numero de WhatsApp")]
-        public int WhatsApp { get; set; }
+        public string WhatsApp { get; set; } = null!;
 
         [Required(ErrorMessage = "Agrege un correo electronico")]
         public string Correo { get; set; } = null!;
 
+        public DateTime FechaRegistro { get; set; }
+
         [Required]
-        [Range(1, int.MaxValue,ErrorMessage = "El campo {0} es requerido")]
-        public string IdRoles { get; set; } = null!;
+        [Range(1, int.MaxValue, ErrorMessage = "El campo {0} es requerido")]
+        public string IdRoles { get; set; } = null!; 
+
+        public RolesShared? roles { get; set; }
     }
 }
